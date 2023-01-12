@@ -34,3 +34,4 @@ replay_pid*
 .gradle/7.5.1/executionHistory/executionHistory.lock
 .gradle/7.5.1/checksums/checksums.lock
 .gradle/7.5.1/executionHistory/executionHistory.lock
+*.lock
