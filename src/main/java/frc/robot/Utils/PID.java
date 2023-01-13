@@ -27,9 +27,9 @@ public class PID {
 
     public double calc(double pv) {
         long t = System.currentTimeMillis();
-        long tv = (lastTime - t)/1000;
-        if (tv > 500) tv = 0;
-        iv += pv * (lastTime - t);
+        double tv = (lastTime - t)/1000;
+        if (tv > 0.5) tv = 0;
+        iv += pv * tv;
         lastTime = t;
         // pv * p + acc * i - DeltaPV * ts * d
         double res = (pv * p) - (iv * i) + (((pv - lpv) * tv) * d);

@@ -89,6 +89,10 @@ public class SwerveModule {
         return res;
     }
 
+    /**
+     * 
+     * @return the angle of the swerve drive
+     */
     public double getEncoderPosition() {
         return enc.getAbsolutePosition() - encOffs;
     }
