@@ -6,7 +6,9 @@ public class PID {
     public double i;
     public double d;
 
+    /** the Integral Accumulator */
     public double iv;
+    /** the last process variable used for calculating derivitive term */
     public double lpv;
 
     private long lastTime = 0;
@@ -29,6 +31,7 @@ public class PID {
         if (tv > 500) tv = 0;
         iv += pv * (lastTime - t);
         lastTime = t;
+        // pv * p + acc * i - DeltaPV * ts * d
         double res = (pv * p) - (iv * i) + (((pv - lpv) * tv) * d);
         lpv = pv;
         return res;
