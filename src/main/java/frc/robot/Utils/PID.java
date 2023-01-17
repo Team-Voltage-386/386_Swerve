@@ -27,12 +27,12 @@ public class PID {
 
     public double calc(double pv) {
         long t = System.currentTimeMillis();
-        double tv = (lastTime - t)/1000;
-        if (tv > 0.5) tv = 0;
+        int tv = (int)(t - lastTime);
+        if (tv > 500) tv = 0;
         iv += pv * tv;
         lastTime = t;
         // pv * p + acc * i - DeltaPV * ts * d
-        double res = (pv * p) - (iv * i) + (((pv - lpv) * tv) * d);
+        double res = (pv * p) + ((iv * i)/1000) - (((lpv - pv) * tv) * d);
         lpv = pv;
         return res;
     }

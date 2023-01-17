@@ -76,6 +76,7 @@ public class Drivetrain extends SubsystemBase {
                                         swerve.targetDrive = Math.sqrt(Math.pow(xFin, 2) + Math.pow(yFin, 2));
                                 } else {
                                         swerve.targetDrive = 0;
+                                        swerve.drivePID.reset();
                                         swerve.targetSteer = swerve.angleFromCenter;
                                 }
 

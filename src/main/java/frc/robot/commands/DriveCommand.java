@@ -26,8 +26,13 @@ public class DriveCommand extends CommandBase {
         dt.yDriveTarget = kDriver.getRawAxis(kLeftVertical) * kMaxDriveSpeed;
         dt.rotationTarget = -kDriver.getRawAxis(kRightHorizontal) * kMaxRotSpeed;
         
+        // set offsets
+        /*
         if (kDriver.getRawButtonPressed(kLeftBumper)) dt.setOffset(-0.65,0);
         else if (kDriver.getRawButtonReleased(kLeftBumper)) dt.setOffset(0,0);
+        */
+
+        dt.setOffset(-1 * -kDriver.getRawAxis(kRightVertical), 0);
 
         if (kDriver.getRawButtonPressed(kRightBumper)) dt.resetFO();
     }

@@ -47,13 +47,13 @@ public final class Constants {
     /** Can IDs, PID values, ect. */
     public static final class DriveConstants {
 
-        public static final double kMaxRotSpeed = 100; // should be in degrees per second
-        public static final double kMaxDriveSpeed = 1; // should be in meters per second
+        public static final double kMaxRotSpeed = 180; // should be in degrees per second
+        public static final double kMaxDriveSpeed = 1.2; // should be in meters per second
 
         public static final int kIMUid = 2;
-        public static final double[] kSwerveSteerPID = {0.008, 0.00, 0.001};
-        public static final double[] kSwerveDrivePID = {0.1, 0.0007, 0.01};
-        public static final double kSwerveDriveEncConv = 0.001;
+        public static final double[] kSwerveSteerPID = {0.01, 0.0, 0.001};
+        public static final double[] kSwerveDrivePID = {0.35, 2,0.01};
+        public static final double kSwerveDriveEncConv = 0.0005;
         public static final SwerveModule LFSwerve = new SwerveModule(14, 18, 24, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26, kSwerveDriveEncConv, 84.1);
         public static final SwerveModule RFSwerve = new SwerveModule(11, 15, 21, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, kSwerveDriveEncConv, 213.15);
         public static final SwerveModule LRSwerve = new SwerveModule(13, 17, 23, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, kSwerveDriveEncConv, 126.25);

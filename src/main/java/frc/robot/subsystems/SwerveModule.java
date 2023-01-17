@@ -12,7 +12,7 @@ public class SwerveModule {
     public final CANSparkMax driveMotor;
     public final CANCoder enc;
     private final PID steerPID;
-    private final  PID drivePID;
+    public final  PID drivePID;
     public final double x;
     public final double y;
     public final double encOffs;
@@ -90,7 +90,6 @@ public class SwerveModule {
     }
 
     /**
-     * 
      * @return the angle of the swerve drive
      */
     public double getEncoderPosition() {
