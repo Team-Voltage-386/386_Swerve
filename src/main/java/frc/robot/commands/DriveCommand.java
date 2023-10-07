@@ -7,7 +7,7 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DriveCommand extends CommandBase {
 
-    private static Drivetrain dt;
+    private Drivetrain dt;
 
     public DriveCommand(Drivetrain DT) {
         dt = DT;

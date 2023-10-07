@@ -20,9 +20,9 @@ public class Drivetrain extends SubsystemBase {
         public double yDriveTarget = 0;
         public double rotationTarget = 0;
 
-        private double xPos = 0;
-        private double yPos = 0;
-        private double angle = 0;
+        public double xPos = 0;
+        public double yPos = 0;
+        public double angle = 0;
 
         /** raw heading stored in [0] index */
         private double ypr[] = new double[3];
@@ -113,6 +113,10 @@ public class Drivetrain extends SubsystemBase {
                 angle = getRawHeading();
 
                 if (Robot.inst.isEnabled()) {
+
+                        if (!wasEnabled) {
+                                odoTimerLast = odometryTimer.get();
+                        }
 
                         double time = odometryTimer.get(); // calculate delta T
                         odometryTimer.reset();
