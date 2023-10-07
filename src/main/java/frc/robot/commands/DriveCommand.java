@@ -23,8 +23,8 @@ public class DriveCommand extends CommandBase {
     @Override
     public void execute() { 
         dt.xDriveTarget = kDriver.getRawAxis(kLeftHorizontal) * kMaxDriveSpeed;
-        dt.yDriveTarget = kDriver.getRawAxis(kLeftVertical) * kMaxDriveSpeed;
-        dt.rotationTarget = -kDriver.getRawAxis(kRightHorizontal) * kMaxRotSpeed;
+        dt.yDriveTarget = -kDriver.getRawAxis(kLeftVertical) * kMaxDriveSpeed;
+        dt.rotationTarget = kDriver.getRawAxis(kRightHorizontal) * kMaxRotSpeed;
         
         // set offsets
         /*

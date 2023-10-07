@@ -54,9 +54,9 @@ public final class Constants {
         public static final double[] kSwerveSteerPID = {0.01, 0.0, 0.001};
         public static final double[] kSwerveDrivePID = {0.35, 2,0.01};
         public static final double kSwerveDriveEncConv = 0.0005;
-        public static final SwerveModule LFSwerve = new SwerveModule(14, 18, 24, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26, kSwerveDriveEncConv, 84.1);
-        public static final SwerveModule RFSwerve = new SwerveModule(11, 15, 21, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, kSwerveDriveEncConv, 213.15);
-        public static final SwerveModule LRSwerve = new SwerveModule(13, 17, 23, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, kSwerveDriveEncConv, 126.25);
-        public static final SwerveModule RRSwerve = new SwerveModule(12, 16, 22, kSwerveSteerPID, kSwerveDrivePID, -0.36, 0.26, kSwerveDriveEncConv, 292.0);
+        public static final SwerveModule LFSwerve = new SwerveModule(14, 18, 24, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26, kSwerveDriveEncConv, 0.0, false);
+        public static final SwerveModule RFSwerve = new SwerveModule(11, 15, 21, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, kSwerveDriveEncConv, 0.0, false);
+        public static final SwerveModule LRSwerve = new SwerveModule(13, 17, 23, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, kSwerveDriveEncConv, 0.0, false);
+        public static final SwerveModule RRSwerve = new SwerveModule(12, 16, 22, kSwerveSteerPID, kSwerveDrivePID, -0.36, 0.26, kSwerveDriveEncConv, 0.0, false);
     }
 }

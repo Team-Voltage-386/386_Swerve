@@ -81,7 +81,6 @@ public class Drivetrain extends SubsystemBase {
                                 }
 
                                 swerve.drive(); 
-                                //System.out.println("Drove");
                         }
                         wasEnabled = true;
                 } else {
@@ -96,7 +95,7 @@ public class Drivetrain extends SubsystemBase {
                 double y = ypr[0];
                 while (y < 0) y += 360;
                 while (y > 360) y -= 360;
-                return -y;
+                return y;
         }
 
 
