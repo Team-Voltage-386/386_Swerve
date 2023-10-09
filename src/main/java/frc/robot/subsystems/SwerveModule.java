@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Utils.PID;
 
 public class SwerveModule {
@@ -81,6 +82,10 @@ public class SwerveModule {
         return new SwerveModulePosition(driveMotor.getEncoder().getPosition(), new Rotation2d(Math.toRadians(getEncoderPosition())));
     }
 
+    public SwerveModuleState getSwerveModuleState() {
+        return new SwerveModuleState(driveMotor.getEncoder().getVelocity(), getEncoderPositionRotation2d());
+    }
+
     /** gets the error ranging from -90 to 90 that the swerve drive needs to turn from
      *  <p>
      *  also sets the drive multiplier to account for when it is quicker to drive the motor backwards rather than steering it all the way around.
@@ -103,6 +108,14 @@ public class SwerveModule {
     public double getEncoderPosition() {
         return enc.getAbsolutePosition() - encOffs;
     }
+
+    /**
+     * @return the angle of the swerve drive
+     */
+    public Rotation2d getEncoderPositionRotation2d() {
+        return new Rotation2d(Math.toRadians(enc.getAbsolutePosition() - encOffs));
+    }
+    
 
     public void calcPosition(double offX, double offY) {
         distFromCenter = Math.sqrt(Math.pow(x + offX, 2)+Math.pow(y + offY, 2)); // precalc math for later

@@ -2,22 +2,32 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.DriveConstants.*;
 
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.fasterxml.jackson.databind.Module;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveTrain;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
 /** A swervedrive drivetrain */
@@ -67,17 +77,25 @@ public class Drivetrain extends SubsystemBase {
 
 
         // array with modules, update to match robot
-        public SwerveModule[] modules = {RFSwerve, RRSwerve, LRSwerve, LFSwerve};
+        public SwerveModule[] modules = {FRSwerve, BRSwerve, BLSwerve, FLSwerve};
+
+        SwerveModulePosition[] modulePositions = new SwerveModulePosition[] {
+                FLSwerve.getSwerveModulePosition(), FRSwerve.getSwerveModulePosition(),
+                BLSwerve.getSwerveModulePosition(), BRSwerve.getSwerveModulePosition()
+                };
+
+        SwerveModuleState[] moduleStates = new SwerveModuleState[] {
+                FLSwerve.getSwerveModuleState(), FRSwerve.getSwerveModuleState(),
+                BLSwerve.getSwerveModuleState(), BRSwerve.getSwerveModuleState()
+        };
+
+        ChassisSpeeds m_chassisSpeeds = m_kinematics.toChassisSpeeds(moduleStates);
 
         Pose2d roboPose = new Pose2d();
 
         SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
                         m_kinematics, gyroGetRotation2D(),
-                        new SwerveModulePosition[] {
-                        LFSwerve.getSwerveModulePosition(),
-                        RFSwerve.getSwerveModulePosition(),
-                        LRSwerve.getSwerveModulePosition(),
-                        RRSwerve.getSwerveModulePosition()}, 
+                        modulePositions, 
                         roboPose);
 
         public Drivetrain() {
@@ -92,6 +110,13 @@ public class Drivetrain extends SubsystemBase {
         @Override
         public void periodic() {
                 updateOdometry();
+                updateWidgets();
+                updateModulePositions();
+                updateModuleStates();
+                setModuleStates();
+        }
+
+        public void setModuleStates() {
                 if (Robot.inst.isEnabled()) {
                         for (SwerveModule swerve : modules) {
 
@@ -127,8 +152,13 @@ public class Drivetrain extends SubsystemBase {
                         if (wasEnabled) for (SwerveModule swerve : modules) swerve.reset();
                         wasEnabled = false;
                 }
+        }
 
-                updateWidgets();
+        public void updateModuleStates() {
+                moduleStates = new SwerveModuleState[] {
+                        FLSwerve.getSwerveModuleState(), FRSwerve.getSwerveModuleState(),
+                        BLSwerve.getSwerveModuleState(), BRSwerve.getSwerveModuleState()
+                };
         }
 
         public double getRawHeading() {
@@ -147,8 +177,12 @@ public class Drivetrain extends SubsystemBase {
                 IMU.setYaw(0);
         }
 
+        /**
+         * Returns the yaw of the gyro in Rotation2d format
+         * @return orientation of robot chasis (assuming the gyro is mounted facing the front)
+         */
         public Rotation2d gyroGetRotation2D() {
-                return new Rotation2d(Math.toRadians(IMU.getYaw()));
+                return new Rotation2d(Math.toRadians(ypr[0]));
         }
 
         private void updateOdometry() {
@@ -166,21 +200,51 @@ public class Drivetrain extends SubsystemBase {
 
                         // Update the pose
                         roboPose = m_odometry.update(gyroAngle,
-                        new SwerveModulePosition[] {
-                        LFSwerve.getSwerveModulePosition(), RFSwerve.getSwerveModulePosition(),
-                        LRSwerve.getSwerveModulePosition(), RRSwerve.getSwerveModulePosition()
-                        });
+                        modulePositions);
 
-                        double xAdd = 0;
-                        double yAdd = 0;
-
-                        xPos += xAdd/modules.length;
-                        yPos += yAdd/modules.length;
+                        xPos = roboPose.getX();
+                        yPos = roboPose.getY();
                 }
         }
 
         public Pose2d getPose() {
-                return roboPose;
+                return m_odometry.getPoseMeters();
+        }
+
+        public void updateModulePositions() {
+                modulePositions = new SwerveModulePosition[] {
+                        FLSwerve.getSwerveModulePosition(), FRSwerve.getSwerveModulePosition(),
+                        BLSwerve.getSwerveModulePosition(), BRSwerve.getSwerveModulePosition()};
+        }
+       
+        public void resetOdometry(Pose2d pose) {
+                m_odometry.resetPosition(gyroGetRotation2D(), new SwerveModulePosition[] {}, pose);
+        }
+
+        // Assuming this method is part of a drivetrain subsystem that provides the necessary methods
+        // https://github.com/HighlanderRobotics/Rapid-React/blob/main/src/main/java/frc/robot/subsystems/DrivetrainSubsystem.java
+        public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+                return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                // Reset odometry for the first path you run during auto
+                if(isFirstPath){
+                        this.resetOdometry(traj.getInitialHolonomicPose());
+                }
+                }),
+                new PPSwerveControllerCommand(
+                        traj, 
+                        () -> m_odometry.getPoseMeters(), // Pose supplier
+                        this.m_kinematics, // SwerveDriveKinematics
+                        new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                        new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+                        new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                        (SwerveModuleState[] states) -> { // Consumes the module states to set the modules moving in the directions we want
+                                m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+                              }, // Module states consumer
+                        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                        this // Requires this drive subsystem
+                )
+                );
         }
 
 
@@ -196,15 +260,15 @@ public class Drivetrain extends SubsystemBase {
         private static final GenericEntry xPosWidget = driveTab.add("X", 0).withPosition(3,0).withSize(1,1).getEntry();
         private static final GenericEntry yPosWidget = driveTab.add("Y", 0).withPosition(4,0).withSize(1,1).getEntry();
         private void updateWidgets() {
-                RFEncoderWidget.setDouble(RFSwerve.getEncoderPosition());
-                RREncoderWidget.setDouble(RRSwerve.getEncoderPosition());
-                LREncoderWidget.setDouble(LRSwerve.getEncoderPosition());
-                LFEncoderWidget.setDouble(LFSwerve.getEncoderPosition());
+                RFEncoderWidget.setDouble(FRSwerve.getEncoderPosition());
+                RREncoderWidget.setDouble(BRSwerve.getEncoderPosition());
+                LREncoderWidget.setDouble(BLSwerve.getEncoderPosition());
+                LFEncoderWidget.setDouble(FLSwerve.getEncoderPosition());
 
-                RFVelWidget.setDouble(RFSwerve.driveMotor.getEncoder().getVelocity());
-                RRVelWidget.setDouble(RRSwerve.driveMotor.getEncoder().getVelocity());
-                LFVelWidget.setDouble(LFSwerve.driveMotor.getEncoder().getVelocity());
-                LRVelWidget.setDouble(LRSwerve.driveMotor.getEncoder().getVelocity());
+                RFVelWidget.setDouble(FRSwerve.driveMotor.getEncoder().getVelocity());
+                RRVelWidget.setDouble(BRSwerve.driveMotor.getEncoder().getVelocity());
+                LFVelWidget.setDouble(FLSwerve.driveMotor.getEncoder().getVelocity());
+                LRVelWidget.setDouble(BLSwerve.driveMotor.getEncoder().getVelocity());
 
                 xPosWidget.setDouble(xPos);
                 yPosWidget.setDouble(yPos);
