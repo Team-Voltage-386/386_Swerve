@@ -86,6 +86,11 @@ public class SwerveModule {
         return new SwerveModuleState(driveMotor.getEncoder().getVelocity(), getEncoderPositionRotation2d());
     }
 
+    public void setModuleState(SwerveModuleState moduleState) {
+        targetSteer = moduleState.angle.getDegrees();
+        targetDrive = moduleState.speedMetersPerSecond;
+    }
+
     /** gets the error ranging from -90 to 90 that the swerve drive needs to turn from
      *  <p>
      *  also sets the drive multiplier to account for when it is quicker to drive the motor backwards rather than steering it all the way around.

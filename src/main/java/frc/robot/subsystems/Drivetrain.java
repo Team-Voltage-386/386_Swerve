@@ -107,7 +107,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         public void setModuleStates() {
-                if (Robot.inst.isEnabled()) {
+                if (Robot.inst.isTeleopEnabled()) {
                         for (SwerveModule swerve : modules) {
 
                                 if (Math.abs(xDriveTarget) > 0.05 || Math.abs(yDriveTarget) > 0.05 || Math.abs(rotationTarget) > 1) {
@@ -139,8 +139,14 @@ public class Drivetrain extends SubsystemBase {
                         }
                         wasEnabled = true;
                 } else {
-                        if (wasEnabled) for (SwerveModule swerve : modules) swerve.reset();
+                        if (wasEnabled && !Robot.inst.isAutonomous()) for (SwerveModule swerve : modules) swerve.reset();
                         wasEnabled = false;
+                }
+        }
+        
+        public void setModuleStates(SwerveModuleState[] swerveModules) {
+                for (int i = 0; i < swerveModules.length; i++) {
+                        modules[i].setModuleState(swerveModules[i]);
                 }
         }
 
@@ -207,28 +213,28 @@ public class Drivetrain extends SubsystemBase {
         // https://github.com/HighlanderRobotics/Rapid-React/blob/main/src/main/java/frc/robot/subsystems/DrivetrainSubsystem.java
         public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
                 return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                // Reset odometry for the first path you run during auto
-                if(isFirstPath){
-                        this.resetOdometry(traj.getInitialHolonomicPose());
-                }
-                }),
-                new PPSwerveControllerCommand(
-                        traj, 
-                        () -> m_odometry.getPoseMeters(), // Pose supplier
-                        this.m_kinematics, // SwerveDriveKinematics
-                        new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                        new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-                        new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                        (SwerveModuleState[] states) -> { // Consumes the module states to set the modules moving in the directions we want
-                                m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
-                              }, // Module states consumer
-                        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-                        this // Requires this drive subsystem
-                )
+                        new InstantCommand(() -> {
+                        // Reset odometry for the first path you run during auto
+                        if(isFirstPath){
+                                this.resetOdometry(traj.getInitialHolonomicPose());
+                        }
+                        }),
+                        new PPSwerveControllerCommand(
+                                traj, 
+                                () -> m_odometry.getPoseMeters(), // Pose supplier
+                                this.m_kinematics, // SwerveDriveKinematics
+                                new PIDController(0.5, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                                new PIDController(0.5, 0, 0), // Y controller (usually the same values as X controller)
+                                new PIDController(0.5, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                                (SwerveModuleState[] states) -> { // Consumes the module states to set the modules moving in the directions we want
+                                        m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+                                        setModuleStates(states);
+                                }, // Module states consumer
+                                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                                this // Requires this drive subsystem
+                        )
                 );
         }
-
 
         private static final ShuffleboardTab driveTab = Shuffleboard.getTab("Drivetrain");
         private static final GenericEntry RFEncoderWidget = driveTab.add("Right Front Encoder", 0).withPosition(1,0).withSize(1,1).getEntry();
