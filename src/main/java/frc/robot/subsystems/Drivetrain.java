@@ -2,10 +2,7 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.DriveConstants.*;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.fasterxml.jackson.databind.Module;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
@@ -19,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,10 +44,6 @@ public class Drivetrain extends SubsystemBase {
 
         /** flag to handle disable safety */
         private boolean wasEnabled = false;
-
-        // timers for odometry
-        private Timer odometryTimer = new Timer();
-        private double odoTimerLast = 0;
 
         private final Translation2d m_frontLeftLocation = new Translation2d(
                 DriveTrain.kDistanceMiddleToFrontMotor * DriveTrain.kXForward,
@@ -103,8 +95,6 @@ public class Drivetrain extends SubsystemBase {
         }
 
         public void init() { 
-                odometryTimer.start();
-                odoTimerLast = odometryTimer.get();
         }
 
         @Override
@@ -191,16 +181,8 @@ public class Drivetrain extends SubsystemBase {
 
                 if (Robot.inst.isEnabled()) {
 
-                        if (!wasEnabled) {
-                                odoTimerLast = odometryTimer.get();
-                        }
-
-                        // Get the rotation of the robot from the gyro.
-                        Rotation2d gyroAngle = gyroGetRotation2D();
-
                         // Update the pose
-                        roboPose = m_odometry.update(gyroAngle,
-                        modulePositions);
+                        roboPose = m_odometry.update(gyroGetRotation2D(), modulePositions);
 
                         xPos = roboPose.getX();
                         yPos = roboPose.getY();
