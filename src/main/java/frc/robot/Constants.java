@@ -20,6 +20,17 @@ import frc.robot.subsystems.SwerveModule;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static class DriveTrain {
+        public static final double kDistanceMiddleToFrontMotor = 0.365125;
+        public static final double kDistanceMiddleToSideMotor = 0.263525;
+
+        public static final int kXForward = 1;
+        public static final int kXBackward = -1;
+        public static final int kYLeft = -1;
+        public static final int kYRight = 1;
+    };
+    
     /** the indexes to address buttons on the controller */
     public static final class ControllerConstants {
         public static final Joystick kDriver = new Joystick(0);

@@ -4,6 +4,8 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Utils.PID;
 
 public class SwerveModule {
@@ -73,6 +75,10 @@ public class SwerveModule {
         //steerMotor.set(getSwerveHeadingError() * 0.005);
         driveMotor.set(drivePID.calc((driveMult * targetDrive) - driveMotor.getEncoder().getVelocity()));
         //driveMotor.set(targetDrive * 0.1 * driveMult);
+    }
+
+    public SwerveModulePosition getSwerveModulePosition() {
+        return new SwerveModulePosition(driveMotor.getEncoder().getPosition(), new Rotation2d(Math.toRadians(getEncoderPosition())));
     }
 
     /** gets the error ranging from -90 to 90 that the swerve drive needs to turn from

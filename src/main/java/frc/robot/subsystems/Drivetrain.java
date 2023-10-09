@@ -5,12 +5,19 @@ import static frc.robot.Constants.DriveConstants.*;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.Constants.DriveTrain;
 
 
 /** A swervedrive drivetrain */
@@ -36,9 +43,42 @@ public class Drivetrain extends SubsystemBase {
         private Timer odometryTimer = new Timer();
         private double odoTimerLast = 0;
 
+        private final Translation2d m_frontLeftLocation = new Translation2d(
+                DriveTrain.kDistanceMiddleToFrontMotor * DriveTrain.kXForward,
+                DriveTrain.kDistanceMiddleToSideMotor * DriveTrain.kYLeft);
+        private final Translation2d m_frontRightLocation = new Translation2d(
+                DriveTrain.kDistanceMiddleToFrontMotor * DriveTrain.kXForward,
+                DriveTrain.kDistanceMiddleToSideMotor * DriveTrain.kYRight);
+        private final Translation2d m_backLeftLocation = new Translation2d(
+                DriveTrain.kDistanceMiddleToFrontMotor * DriveTrain.kXBackward,
+                DriveTrain.kDistanceMiddleToSideMotor * DriveTrain.kYLeft);
+        private final Translation2d m_backRightLocation = new Translation2d(
+                DriveTrain.kDistanceMiddleToFrontMotor * DriveTrain.kXBackward,
+                DriveTrain.kDistanceMiddleToSideMotor * DriveTrain.kYRight);
+
+        /**
+         * The order that you initialize these is important! Later uses of functions
+         * like toSwerveModuleStates will return the same order that these are provided.
+         * See
+         * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
+         */
+        private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+                m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
+
         // array with modules, update to match robot
         public SwerveModule[] modules = {RFSwerve, RRSwerve, LRSwerve, LFSwerve};
 
+        Pose2d roboPose = new Pose2d();
+
+        SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+                        m_kinematics, gyroGetRotation2D(),
+                        new SwerveModulePosition[] {
+                        LFSwerve.getSwerveModulePosition(),
+                        RFSwerve.getSwerveModulePosition(),
+                        LRSwerve.getSwerveModulePosition(),
+                        RRSwerve.getSwerveModulePosition()}, 
+                        roboPose);
 
         public Drivetrain() {
                 this.init();
@@ -107,6 +147,10 @@ public class Drivetrain extends SubsystemBase {
                 IMU.setYaw(0);
         }
 
+        public Rotation2d gyroGetRotation2D() {
+                return new Rotation2d(Math.toRadians(IMU.getYaw()));
+        }
+
         private void updateOdometry() {
                 IMU.getYawPitchRoll(ypr);
                 angle = getRawHeading();
@@ -117,26 +161,26 @@ public class Drivetrain extends SubsystemBase {
                                 odoTimerLast = odometryTimer.get();
                         }
 
-                        double time = odometryTimer.get(); // calculate delta T
-                        odometryTimer.reset();
-                        odometryTimer.start();
-                        double deltaT = time-odoTimerLast;
-                        odoTimerLast = time;
+                        // Get the rotation of the robot from the gyro.
+                        Rotation2d gyroAngle = gyroGetRotation2D();
+
+                        // Update the pose
+                        roboPose = m_odometry.update(gyroAngle,
+                        new SwerveModulePosition[] {
+                        LFSwerve.getSwerveModulePosition(), RFSwerve.getSwerveModulePosition(),
+                        LRSwerve.getSwerveModulePosition(), RRSwerve.getSwerveModulePosition()
+                        });
 
                         double xAdd = 0;
                         double yAdd = 0;
-                        
-                        for (SwerveModule swerve : modules) {
-                                double aRad = Math.toRadians(angle+swerve.getEncoderPosition());
-                                double vel = swerve.driveMotor.getEncoder().getVelocity();
-                                xAdd += deltaT * (Math.cos(aRad) * vel);
-                                yAdd += deltaT * (Math.sin(aRad) * vel);
-                        }
 
                         xPos += xAdd/modules.length;
                         yPos += yAdd/modules.length;
                 }
+        }
 
+        public Pose2d getPose() {
+                return roboPose;
         }
 
 
