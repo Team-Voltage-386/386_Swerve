@@ -47,6 +47,8 @@ public class SwerveModule {
         driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         driveMotor.getEncoder().setPositionConversionFactor(DRVCONV);
         driveMotor.getEncoder().setVelocityConversionFactor(DRVCONV);
+        //just for swervebase
+        driveMotor.setInverted(true);
 
         enc = new CANCoder(encID); // this is the steering encoder
         enc.clearStickyFaults();
