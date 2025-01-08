@@ -71,10 +71,14 @@ public class SwerveModule {
 
     /** calculates and sets motor drive powers */
     public void drive() {
+
+        // sets the speed of the steering motor based on the heading error that is calculated
         steerMotor.set(steerPID.calc(getSwerveHeadingError()));
-        //steerMotor.set(getSwerveHeadingError() * 0.005);
+
+        // sets the drive motor power, the equation is described below
+        //  Error = setpoint - PV = [drive power (reversed if needed)] - [Raw motor velocity * Encoder Conversion factor]
         driveMotor.set(drivePID.calc((driveMult * targetDrive) - driveMotor.getEncoder().getVelocity() * kSwerveDriveEncConv));
-        //driveMotor.set(targetDrive * 0.1 * driveMult);
+
     }
 
     /** gets the error ranging from -90 to 90 that the swerve drive needs to turn from
@@ -83,25 +87,31 @@ public class SwerveModule {
      */
     private double getSwerveHeadingError() {
         double res = targetSteer - getEncoderPosition();
-        while (res < -180) res += 360; // bring error around to range from -180 to 180
+
+        // ensure error is within -180 to 180
+        while (res < -180) res += 360;
         while (res > 180) res -= 360;
-        if (Math.abs(res) > 90) { // if it is quicker to drive motor backwards, set drive multiplier and adjust error
+
+        // if the module would have to travel less distance if it reverses the drive motor, then do that by setting the drivemult = -1
+        if (Math.abs(res) > 90) {
             driveMult = -1;
             if (res > 0) res -= 180;
             else res += 180;
         } else driveMult = 1;
+
+
         return res;
     }
 
     /**
-     * @return the angle of the swerve drive
+     * @return the current angle of the swerve drive
      */
     public double getEncoderPosition() {
         return enc.getAbsolutePosition().getValue().in(Degrees) - encOffs;
     }
 
     public void calcPosition(double offX, double offY) {
-        distFromCenter = Math.sqrt(Math.pow(x + offX, 2)+Math.pow(y + offY, 2)); // precalc math for later
-        angleFromCenter = Math.toDegrees(Math.atan2(y + offY, x + offX));
+        distFromCenter = Math.sqrt(Math.pow(x + offX, 2)+Math.pow(y + offY, 2)); // These values are required to calculate the vectors needed to make the robot spin
+        angleFromCenter = Math.toDegrees(Math.atan2(y + offY, x + offX));           // They represent the position of the swerve module relative to the intended center of rotation
     }
 }
