@@ -44,7 +44,7 @@ public final class Constants {
         public static final int kRightJoystickPressed = 10;
     }
 
-    /** Can IDs, PID values, ect. */
+    /** static SwerveModule objects, Can IDs, PID values, ect. */
     public static final class DriveConstants {
 
         public static final double kMaxRotSpeed = 180; // should be in degrees per second

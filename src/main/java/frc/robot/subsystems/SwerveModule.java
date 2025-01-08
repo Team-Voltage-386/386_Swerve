@@ -23,12 +23,10 @@ public class SwerveModule {
     public double distFromCenter;
     public int driveMult = 1;
 
+    /** steering angle in degrees for this module to target relative to the robot frame */
     public double targetSteer = 0;
+    /** Wheel velocity in m/s (if kSwerveDriveEncConv is set correctly) for the module to target */
     public double targetDrive = 0;
-
-
-    
-
 
     
     /**
@@ -98,7 +96,6 @@ public class SwerveModule {
             if (res > 0) res -= 180;
             else res += 180;
         } else driveMult = 1;
-
 
         return res;
     }
