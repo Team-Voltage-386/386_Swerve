@@ -13,18 +13,20 @@ public class SwerveModule {
     public final SparkMax steerMotor;
     public final SparkMax driveMotor;
     public final CANcoder enc;
-    private final PID steerPID;
+    public final PID steerPID;
     public final  PID drivePID;
     public final double x;
     public final double y;
     public final double encOffs;
     public double angleFromCenter;
     public double distFromCenter;
+    public int driveMult = 1;
 
     public double targetSteer = 0;
     public double targetDrive = 0;
 
-    public int driveMult = 1;
+
+    
 
 
     

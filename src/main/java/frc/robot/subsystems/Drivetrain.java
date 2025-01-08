@@ -19,6 +19,7 @@ public class Drivetrain extends SubsystemBase {
         public double xDriveTarget = 0;
         public double yDriveTarget = 0;
         public double rotationTarget = 0;
+        public boolean isFO = true;
 
         public double xPos = 0;
         public double yPos = 0;
@@ -68,9 +69,14 @@ public class Drivetrain extends SubsystemBase {
                                         x += r*Math.cos(Math.toRadians(rAngle));
                                         y += r*Math.sin(Math.toRadians(rAngle));
 
-                                        // apply vectors to the rotation of the robot (making it field-oriented)
-                                        double xFin = (x * Math.cos(angleRad)) + (y * Math.sin(angleRad)); 
-                                        double yFin = (x * Math.cos(angleRad + (Math.PI/2))) + (y * Math.sin(angleRad + (Math.PI/2)));
+                                        double xFin = x;
+                                        double yFin = y;
+
+                                        if (isFO) {
+                                                // apply vectors to the rotation of the robot (making it field-oriented)
+                                                xFin = (x * Math.cos(angleRad)) + (y * Math.sin(angleRad)); 
+                                                yFin = (x * Math.cos(angleRad + (Math.PI/2))) + (y * Math.sin(angleRad + (Math.PI/2)));
+                                        }
 
                                         //extract angle and power
                                         swerve.targetSteer = Math.toDegrees(Math.atan2(yFin, xFin));
