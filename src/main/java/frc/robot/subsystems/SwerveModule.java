@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.Constants.DriveConstants.kSwerveDriveEncConv;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -96,7 +97,7 @@ public class SwerveModule {
      * @return the angle of the swerve drive
      */
     public double getEncoderPosition() {
-        return enc.getAbsolutePosition().getValueAsDouble() - encOffs;
+        return enc.getAbsolutePosition().getValue().in(Degrees) - encOffs;
     }
 
     public void calcPosition(double offX, double offY) {

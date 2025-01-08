@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.Constants.DriveConstants.*;
 
 
@@ -99,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         public double getRawHeading() {
-                double y = IMU.getYaw().getValueAsDouble();
+                double y = IMU.getYaw().getValue().in(Degrees);
                 while (y < 0) y += 360;
                 while (y > 360) y -= 360;
                 return y;
