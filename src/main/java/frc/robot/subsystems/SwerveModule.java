@@ -1,16 +1,18 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import static frc.robot.Constants.DriveConstants.kSwerveDriveEncConv;
+
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.Utils.PID;
 
 public class SwerveModule {
 
-    public final CANSparkMax steerMotor;
-    public final CANSparkMax driveMotor;
-    public final CANCoder enc;
+    public final SparkMax steerMotor;
+    public final SparkMax driveMotor;
+    public final CANcoder enc;
     private final PID steerPID;
     public final  PID drivePID;
     public final double x;
@@ -40,14 +42,11 @@ public class SwerveModule {
      */
     public SwerveModule(int steerID, int driveID, int encID, double[] steerPIDvalue, double[] drivePIDvalue, double X, double Y, double DRVCONV, double ENCOS, boolean encoderReverse) {
 
-        steerMotor = new CANSparkMax(steerID, MotorType.kBrushless); // create motors and set conversion
-        driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
-        driveMotor.getEncoder().setPositionConversionFactor(DRVCONV);
-        driveMotor.getEncoder().setVelocityConversionFactor(DRVCONV);
+        steerMotor = new SparkMax(steerID, MotorType.kBrushless); // create motors and set conversion
+        driveMotor = new SparkMax(driveID, MotorType.kBrushless);
 
-        enc = new CANCoder(encID); // this is the steering encoder
+        enc = new CANcoder(encID); // this is the steering encoder
         enc.clearStickyFaults();
-        enc.configSensorDirection(encoderReverse);
 
         steerPID = new PID(steerPIDvalue[0], steerPIDvalue[1], steerPIDvalue[2]);
         drivePID = new PID(drivePIDvalue[0], drivePIDvalue[1], drivePIDvalue[2]);
@@ -71,7 +70,7 @@ public class SwerveModule {
     public void drive() {
         steerMotor.set(steerPID.calc(getSwerveHeadingError()));
         //steerMotor.set(getSwerveHeadingError() * 0.005);
-        driveMotor.set(drivePID.calc((driveMult * targetDrive) - driveMotor.getEncoder().getVelocity()));
+        driveMotor.set(drivePID.calc((driveMult * targetDrive) - driveMotor.getEncoder().getVelocity() * kSwerveDriveEncConv));
         //driveMotor.set(targetDrive * 0.1 * driveMult);
     }
 
@@ -95,7 +94,7 @@ public class SwerveModule {
      * @return the angle of the swerve drive
      */
     public double getEncoderPosition() {
-        return enc.getAbsolutePosition() - encOffs;
+        return enc.getAbsolutePosition().getValueAsDouble() - encOffs;
     }
 
     public void calcPosition(double offX, double offY) {
