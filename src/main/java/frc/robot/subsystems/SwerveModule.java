@@ -43,7 +43,7 @@ public class SwerveModule {
      * @param DRVCONV drive encoder conversion value
      * @param ENCOS absolute encoder offset (for centering modules)
      */
-    public SwerveModule(int steerID, int driveID, int encID, double[] steerPIDvalue, double[] drivePIDvalue, double X, double Y, double ENCOS, boolean encoderReverse) {
+    public SwerveModule(int steerID, int driveID, int encID, double[] steerPIDvalue, double[] drivePIDvalue, double X, double Y, double ENCOS) {
 
         steerMotor = new SparkMax(steerID, MotorType.kBrushless); // create motors and set conversion
         driveMotor = new SparkMax(driveID, MotorType.kBrushless);
