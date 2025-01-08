@@ -48,7 +48,11 @@ public class Drivetrain extends SubsystemBase {
 
         @Override
         public void periodic() {
-                updateOdometry();
+
+                angle = getRawHeading();
+
+                deadReckonOdometry();
+
                 if (Robot.inst.isEnabled()) {
                         for (SwerveModule swerve : modules) {
 
@@ -104,9 +108,7 @@ public class Drivetrain extends SubsystemBase {
                 IMU.setYaw(0);
         }
 
-        private void updateOdometry() {
-                angle = getRawHeading();
-
+        private void deadReckonOdometry() {
                 if (Robot.inst.isEnabled()) {
 
                         if (!wasEnabled) {
@@ -131,8 +133,9 @@ public class Drivetrain extends SubsystemBase {
 
                         xPos += xAdd/modules.length;
                         yPos += yAdd/modules.length;
-                }
 
+
+                }
         }
 
 
