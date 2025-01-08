@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.DriveConstants.*;
 
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,9 +23,6 @@ public class Drivetrain extends SubsystemBase {
         public double xPos = 0;
         public double yPos = 0;
         public double angle = 0;
-
-        /** raw heading stored in [0] index */
-        private double ypr[] = new double[3];
 
         public Pigeon2 IMU = new Pigeon2(kIMUid);
 
@@ -92,7 +89,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         public double getRawHeading() {
-                double y = ypr[0];
+                double y = IMU.getYaw().getValueAsDouble();
                 while (y < 0) y += 360;
                 while (y > 360) y -= 360;
                 return y;
@@ -108,7 +105,6 @@ public class Drivetrain extends SubsystemBase {
         }
 
         private void updateOdometry() {
-                IMU.getYawPitchRoll(ypr);
                 angle = getRawHeading();
 
                 if (Robot.inst.isEnabled()) {
