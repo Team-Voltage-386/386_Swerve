@@ -37,8 +37,8 @@ public class Drivetrain extends SubsystemBase {
         private double odoTimerLast = 0;
 
         // array with modules, update to match robot
-        public SwerveModule[] modules = {RFSwerve};// RRSwerve, LRSwerve, LFSwerve};
-
+        public SwerveModule[] modules = {RFSwerve, RRSwerve, LRSwerve, LFSwerve};
+        private SwerveModule[] odoModules = {RFSwerve};
 
         public Drivetrain() {
                 this.init();
@@ -132,15 +132,15 @@ public class Drivetrain extends SubsystemBase {
                         double xAdd = 0;
                         double yAdd = 0;
                         
-                        for (SwerveModule swerve : modules) {
+                        for (SwerveModule swerve : odoModules) {
                                 double aRad = Math.toRadians(angle+swerve.getEncoderPosition());
-                                double vel = swerve.driveMotor.getEncoder().getVelocity();
+                                double vel = swerve.getMotorSpeed();
                                 xAdd += deltaT * (Math.cos(aRad) * vel);
                                 yAdd += deltaT * (Math.sin(aRad) * vel);
                         }
 
-                        xPos += xAdd/modules.length;
-                        yPos += yAdd/modules.length;
+                        xPos += xAdd/odoModules.length;
+                        yPos += yAdd/odoModules.length;
 
 
                 }
@@ -165,10 +165,10 @@ public class Drivetrain extends SubsystemBase {
                 LREncoderWidget.setDouble(LRSwerve.getEncoderPosition());
                 LFEncoderWidget.setDouble(LFSwerve.getEncoderPosition());
 
-                RFVelWidget.setDouble(RFSwerve.driveMotor.getEncoder().getVelocity());
-                RRVelWidget.setDouble(RRSwerve.driveMotor.getEncoder().getVelocity());
-                LFVelWidget.setDouble(LFSwerve.driveMotor.getEncoder().getVelocity());
-                LRVelWidget.setDouble(LRSwerve.driveMotor.getEncoder().getVelocity());
+                RFVelWidget.setDouble(RFSwerve.getMotorSpeed());
+                RRVelWidget.setDouble(RRSwerve.getMotorSpeed());
+                LFVelWidget.setDouble(LFSwerve.getMotorSpeed());
+                LRVelWidget.setDouble(LRSwerve.getMotorSpeed());
 
                 xPosWidget.setDouble(xPos);
                 yPosWidget.setDouble(yPos);

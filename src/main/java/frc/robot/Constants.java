@@ -47,16 +47,16 @@ public final class Constants {
     /** static SwerveModule objects, Can IDs, PID values, ect. */
     public static final class DriveConstants {
 
-        public static final double kMaxRotSpeed = 180; // should be in degrees per second
-        public static final double kMaxDriveSpeed = 1.2; // should be in meters per second
+        public static final double kMaxRotSpeed = 260; // should be in degrees per second
+        public static final double kMaxDriveSpeed = 2.0; // should be in meters per second
 
         public static final int kIMUid = 13;
-        public static final double[] kSwerveSteerPID = {0.01, 0.0, 0.001};
-        public static final double[] kSwerveDrivePID = {0.35, 2,0.01};
-        public static final double kSwerveDriveEncConv = 0.0005;
-        public static final SwerveModule LFSwerve = new SwerveModule(5, 6, 11, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26,166.3);
-        public static final SwerveModule RFSwerve = new SwerveModule(8, 52, 12, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, 128);
-        public static final SwerveModule LRSwerve = new SwerveModule(4, 7, 10, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, 70.1);
-        public static final SwerveModule RRSwerve = new SwerveModule(3, 2, 9, kSwerveSteerPID, kSwerveDrivePID, -0.36, 0.26, 7.1);
+        public static final double[] kSwerveSteerPID = {0.015, 0.0, 0.001};//{0.01, 0.0, 0.001};
+        public static final double[] kSwerveDrivePID = {0.3, 2, 0.01}; //{0.35, 2,0.01};
+        public static final double kSwerveDriveEncConv = 0.8;
+        public static final SwerveModule LFSwerve = new SwerveModule(5, 6, 11, kSwerveSteerPID, kSwerveDrivePID, 0.165, 0.165,166.3);
+        public static final SwerveModule RFSwerve = new SwerveModule(8, 52, 12, kSwerveSteerPID, kSwerveDrivePID, 0.165, -0.165, 128);
+        public static final SwerveModule LRSwerve = new SwerveModule(4, 7, 10, kSwerveSteerPID, kSwerveDrivePID, -0.165, 0.165, 70.1);
+        public static final SwerveModule RRSwerve = new SwerveModule(3, 2, 9, kSwerveSteerPID, kSwerveDrivePID, -0.165, -0.165, 7.1);
     }
 }

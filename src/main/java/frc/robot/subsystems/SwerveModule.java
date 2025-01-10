@@ -71,11 +71,11 @@ public class SwerveModule {
     public void drive() {
 
         // sets the speed of the steering motor based on the heading error that is calculated
-        steerMotor.set(-steerPID.calc(getSwerveHeadingError()));
+        steerMotor.set(steerPID.calc(getSwerveHeadingError()));
 
         // sets the drive motor power, the equation is described below
         //  Error = setpoint - PV = [drive power (reversed if needed)] - [Raw motor velocity * Encoder Conversion factor]
-        driveMotor.set(drivePID.calc((driveMult * targetDrive) - driveMotor.getEncoder().getVelocity() * kSwerveDriveEncConv));
+        driveMotor.set(drivePID.calc((driveMult * targetDrive) - getMotorSpeed()));
 
     }
 
@@ -110,5 +110,9 @@ public class SwerveModule {
     public void calcPosition(double offX, double offY) {
         distFromCenter = Math.sqrt(Math.pow(x + offX, 2)+Math.pow(y + offY, 2)); // These values are required to calculate the vectors needed to make the robot spin
         angleFromCenter = Math.toDegrees(Math.atan2(y + offY, x + offX));           // They represent the position of the swerve module relative to the intended center of rotation
+    }
+
+    public double getMotorSpeed() {
+        return driveMotor.getEncoder().getVelocity() * kSwerveDriveEncConv;
     }
 }
