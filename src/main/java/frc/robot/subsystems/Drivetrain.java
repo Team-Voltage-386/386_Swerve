@@ -7,7 +7,6 @@ import static frc.robot.Constants.DriveConstants.*;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,8 +32,7 @@ public class Drivetrain extends SubsystemBase {
         private boolean wasEnabled = false;
 
         // timers for odometry
-        private Timer odometryTimer = new Timer();
-        private double odoTimerLast = 0;
+        private long odoTimerLast = 0;
 
         // array with modules, update to match robot
         public SwerveModule[] modules = {RFSwerve, RRSwerve, LRSwerve, LFSwerve};
@@ -45,8 +43,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         public void init() { 
-                odometryTimer.start();
-                odoTimerLast = odometryTimer.get();
+                odoTimerLast = System.currentTimeMillis();
         }
 
         @Override
@@ -120,20 +117,18 @@ public class Drivetrain extends SubsystemBase {
                 if (Robot.inst.isEnabled()) {
 
                         if (!wasEnabled) {
-                                odoTimerLast = odometryTimer.get();
+                                odoTimerLast = System.currentTimeMillis();
                         }
 
-                        double time = odometryTimer.get(); // calculate delta T
-                        odometryTimer.reset();
-                        odometryTimer.start();
-                        double deltaT = time-odoTimerLast;
-                        odoTimerLast = time;
+                        long thisTime = System.currentTimeMillis(); // calculate delta T
+                        double deltaT = (thisTime-odoTimerLast) / 1000;
+                        odoTimerLast = thisTime;
 
                         double xAdd = 0;
                         double yAdd = 0;
                         
                         for (SwerveModule swerve : odoModules) {
-                                double aRad = Math.toRadians(angle+swerve.getEncoderPosition());
+                                double aRad = Math.toRadians(angle + swerve.getEncoderPosition());
                                 double vel = swerve.getMotorSpeed();
                                 xAdd += deltaT * (Math.cos(aRad) * vel);
                                 yAdd += deltaT * (Math.sin(aRad) * vel);
@@ -141,8 +136,6 @@ public class Drivetrain extends SubsystemBase {
 
                         xPos += xAdd/odoModules.length;
                         yPos += yAdd/odoModules.length;
-
-
                 }
         }
 
