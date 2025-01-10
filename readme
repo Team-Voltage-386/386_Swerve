@@ -1,4 +1,4 @@
-This project is a bare bones copy of the 2023 season swerve code. 
+This project began as a bare bones copy of the 2023 season swerve code. 
 
 The current plan is to Update it to the WPI coordinate system so that it may be easier to implement path planner and vision driven odometry using custom methods.
 
