@@ -17,6 +17,7 @@ import frc.robot.Robot;
 /** A swervedrive drivetrain */
 public class Drivetrain extends SubsystemBase {
 
+        /** Drive  */
         public double xDriveTarget = 0;
         public double yDriveTarget = 0;
         public double rotationTarget = 0;
@@ -36,7 +37,7 @@ public class Drivetrain extends SubsystemBase {
         private double odoTimerLast = 0;
 
         // array with modules, update to match robot
-        public SwerveModule[] modules = {RFSwerve, RRSwerve, LRSwerve, LFSwerve};
+        public SwerveModule[] modules = {RFSwerve};// RRSwerve, LRSwerve, LFSwerve};
 
 
         public Drivetrain() {
@@ -157,6 +158,7 @@ public class Drivetrain extends SubsystemBase {
         private static final GenericEntry LRVelWidget = driveTab.add("LR Velocity", 0).withPosition(0,3).withSize(1,1).getEntry();
         private static final GenericEntry xPosWidget = driveTab.add("X", 0).withPosition(3,0).withSize(1,1).getEntry();
         private static final GenericEntry yPosWidget = driveTab.add("Y", 0).withPosition(4,0).withSize(1,1).getEntry();
+        private static final GenericEntry pigeonWidget = driveTab.add("Pidgeon Yaw", 0).getEntry();
         private void updateWidgets() {
                 RFEncoderWidget.setDouble(RFSwerve.getEncoderPosition());
                 RREncoderWidget.setDouble(RRSwerve.getEncoderPosition());
@@ -170,6 +172,8 @@ public class Drivetrain extends SubsystemBase {
 
                 xPosWidget.setDouble(xPos);
                 yPosWidget.setDouble(yPos);
+
+                pigeonWidget.setDouble(angle);
         }
 
 }

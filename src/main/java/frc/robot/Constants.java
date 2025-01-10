@@ -50,13 +50,13 @@ public final class Constants {
         public static final double kMaxRotSpeed = 180; // should be in degrees per second
         public static final double kMaxDriveSpeed = 1.2; // should be in meters per second
 
-        public static final int kIMUid = 2;
+        public static final int kIMUid = 13;
         public static final double[] kSwerveSteerPID = {0.01, 0.0, 0.001};
         public static final double[] kSwerveDrivePID = {0.35, 2,0.01};
         public static final double kSwerveDriveEncConv = 0.0005;
-        public static final SwerveModule LFSwerve = new SwerveModule(14, 18, 24, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26, 0.0);
-        public static final SwerveModule RFSwerve = new SwerveModule(11, 15, 21, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, 0.0);
-        public static final SwerveModule LRSwerve = new SwerveModule(13, 17, 23, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, 0.0);
-        public static final SwerveModule RRSwerve = new SwerveModule(12, 16, 22, kSwerveSteerPID, kSwerveDrivePID, -0.36, 0.26, 0.0);
+        public static final SwerveModule LFSwerve = new SwerveModule(5, 6, 11, kSwerveSteerPID, kSwerveDrivePID, 0.36, -0.26,166.3);
+        public static final SwerveModule RFSwerve = new SwerveModule(8, 52, 12, kSwerveSteerPID, kSwerveDrivePID, 0.36, 0.26, 128);
+        public static final SwerveModule LRSwerve = new SwerveModule(4, 7, 10, kSwerveSteerPID, kSwerveDrivePID, -0.36, -0.26, 70.1);
+        public static final SwerveModule RRSwerve = new SwerveModule(3, 2, 9, kSwerveSteerPID, kSwerveDrivePID, -0.36, 0.26, 7.1);
     }
 }

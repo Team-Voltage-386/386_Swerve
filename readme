@@ -1,0 +1,7 @@
+This project is a bare bones copy of the 2023 season swerve code. 
+
+The current plan is to Update it to the WPI coordinate system so that it may be easier to implement path planner and vision driven odometry using custom methods.
+
+The benefits to having a custom swerve system is transparency in the algorithm allowing the principles of swerve drive to be taught to students quicker, and allow for easier implementation of custom behavior, such as advanced autonomous drive methods.
+
+Current plan is: make coordinate system match -> develop and bring dead reckon odometry to an acceptable level of accuracy -> Interface WPI Path Planner -> develop vision-referenced odometry and have robot smoothly transition between methods depending on visibility of AprilTags.

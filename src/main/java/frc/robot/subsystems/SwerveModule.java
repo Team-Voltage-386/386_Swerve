@@ -71,7 +71,7 @@ public class SwerveModule {
     public void drive() {
 
         // sets the speed of the steering motor based on the heading error that is calculated
-        steerMotor.set(steerPID.calc(getSwerveHeadingError()));
+        steerMotor.set(-steerPID.calc(getSwerveHeadingError()));
 
         // sets the drive motor power, the equation is described below
         //  Error = setpoint - PV = [drive power (reversed if needed)] - [Raw motor velocity * Encoder Conversion factor]
