@@ -51,9 +51,15 @@ public class Drivetrain extends SubsystemBase {
 
                 angle = getRawHeading();
 
-                deadReckonOdometry();
-
                 if (Robot.inst.isEnabled()) {
+
+                        if (!wasEnabled) {
+                                wasEnabled = true;
+                                odoTimerLast = System.currentTimeMillis();
+                        }
+
+                        deadReckonOdometry();
+
                         for (SwerveModule swerve : modules) {
 
                                 if (Math.abs(xDriveTarget) > 0.05 || Math.abs(yDriveTarget) > 0.05 || Math.abs(rotationTarget) > 1) {
@@ -88,10 +94,12 @@ public class Drivetrain extends SubsystemBase {
 
                                 swerve.drive(); 
                         }
-                        wasEnabled = true;
+                        
                 } else {
-                        if (wasEnabled) for (SwerveModule swerve : modules) swerve.reset();
-                        wasEnabled = false;
+                        if (wasEnabled) for (SwerveModule swerve : modules) {
+                                swerve.reset();
+                                wasEnabled = false;
+                        }
                 }
 
                 updateWidgets();
@@ -114,29 +122,23 @@ public class Drivetrain extends SubsystemBase {
         }
 
         private void deadReckonOdometry() {
-                if (Robot.inst.isEnabled()) {
 
-                        if (!wasEnabled) {
-                                odoTimerLast = System.currentTimeMillis();
-                        }
+                long thisTime = System.currentTimeMillis(); // calculate delta T
+                double deltaT = (thisTime-odoTimerLast) / 1000;
+                odoTimerLast = thisTime;
 
-                        long thisTime = System.currentTimeMillis(); // calculate delta T
-                        double deltaT = (thisTime-odoTimerLast) / 1000;
-                        odoTimerLast = thisTime;
-
-                        double xAdd = 0;
-                        double yAdd = 0;
-                        
-                        for (SwerveModule swerve : odoModules) {
-                                double aRad = Math.toRadians(angle + swerve.getEncoderPosition());
-                                double vel = swerve.getMotorSpeed();
-                                xAdd += deltaT * (Math.cos(aRad) * vel);
-                                yAdd += deltaT * (Math.sin(aRad) * vel);
-                        }
-
-                        xPos += xAdd/odoModules.length;
-                        yPos += yAdd/odoModules.length;
+                double xAdd = 0;
+                double yAdd = 0;
+                
+                for (SwerveModule swerve : odoModules) {
+                        double aRad = Math.toRadians(angle + swerve.getEncoderPosition());
+                        double vel = swerve.getMotorSpeed();
+                        xAdd += deltaT * (Math.cos(aRad) * vel);
+                        yAdd += deltaT * (Math.sin(aRad) * vel);
                 }
+
+                xPos += xAdd/odoModules.length;
+                yPos += yAdd/odoModules.length;
         }
 
 
