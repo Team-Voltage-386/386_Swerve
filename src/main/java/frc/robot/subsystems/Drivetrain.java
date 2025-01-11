@@ -51,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
 
                 angle = getRawHeading();
 
-                if (Robot.inst.isEnabled()) {
+                if (Robot.instance.isEnabled()) {
 
                         if (!wasEnabled) {
                                 wasEnabled = true;
